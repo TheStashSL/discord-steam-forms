@@ -1,0 +1,17 @@
+{
+	"hostname": "http://link.localhost",
+	"discord": {
+		"clientID": "",
+		"clientSecret": ""
+	},
+	"steam": {
+		"apiKey": ""
+	},
+	"session": {
+		"secret": "ChangeMePlease"
+	},
+	"port": 9002,
+	"encryptionKey": "64bitstringhere",
+	"cookieSecret": "64bitstringhere",
+	"responseWebhook": "yourwebhookurl"
+}
