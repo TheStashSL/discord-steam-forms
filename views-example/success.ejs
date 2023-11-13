@@ -1,0 +1,60 @@
+<html>
+
+<head>
+	<title>The Stash | Staff Application Form</title>
+	<!-- Bootstrap CSS -->
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css" rel="stylesheet">
+
+	<!-- Bootswatch Darkly theme -->
+	<link href="https://stackpath.bootstrapcdn.com/bootswatch/latest/darkly/bootstrap.min.css" rel="stylesheet">
+
+	<!-- Custom Styles -->
+	<style>
+		.form-container {
+			max-width: 800px;
+			/* Set max-width for the form container */
+			margin: 0 auto;
+			/* Center the form container */
+		}
+
+		.form-control {
+			width: auto;
+			/* Make text boxes a decent width */
+		}
+
+		#success {
+			font-size: 100px;
+		}
+		#left {
+			text-align: left;
+			margin-left: 25%;
+			margin-right: 25%;
+		}
+	</style>
+</head>
+
+<body>
+	<!-- Big ol centered text that says Success-->
+	<center>
+		<h1 id="success">Success!</h1>
+		<p class="lead">Thank you <%= sessionData.discordData.global_name %>, your form has been submitted.</p>
+		<div id="left">
+			NOTICE: Do not ask about the progress of your application. </br>
+			An application review date will always be specified in the Application Wave's Opening
+			Announcement. Please be vigilant for any updates and/or review date extensions which may
+			occur in <a href="https://discordapp.com/channels/896000683407458354/896002001014505472">#announcements</a>.</br>
+			DO NOT SHARE THIS FORM THROUGH DM'S OR PUBLIC CHANNELS, UNLESS EXPLICITLY REQUESTED BY PROMOTIONS
+			TEAM PERSONNEL OR COUNCIL MEMBERS.</br>
+
+			Any burning questions/concerns you would like answered should be DM'd to either:</br>
+
+			Promotions Director - Tundra (gamerhombre)</br>
+			Promotions Co-Director - Council Man (suction_cup_man)</br>
+			Head of In-Game Staff - Cr1tikal (cr1tikal621)</br>
+			Server Owner - Oxygen (oxygen_breathableatmosphere)
+		</div>
+	</center>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/latest/js/bootstrap.min.js"></script>
+</body>
+
+</html>

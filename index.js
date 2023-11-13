@@ -16,10 +16,12 @@ const db = new sqlite3.Database('./database.db');
 db.serialize(() => {
 	// database schema, 3 columns, discordId, steamID, and userData, discord and steam IDs are unique/primary keys
 	db.run("CREATE TABLE IF NOT EXISTS users (discordId TEXT UNIQUE, steamId TEXT UNIQUE, userData TEXT)");
+	// blacklist table, 4 cols, discordId, steamId, forwardsTo, and reason, discord and steam IDs are unique but not required
+	db.run("CREATE TABLE IF NOT EXISTS blacklist (discordId TEXT UNIQUE, steamId TEXT UNIQUE, forwardsTo TEXT, reason TEXT)");
 });
 
 const Discord = require("discord.js");
-const hook = new Discord.WebhookClient({"url": config.responseWebhook})
+const hook = new Discord.WebhookClient({ "url": config.responseWebhook })
 
 
 
@@ -48,7 +50,7 @@ passport.use(new DiscordStrategy({
 
 // Steam authentication
 passport.use(new SteamStrategy({
-	returnURL: `${config.hostname}auth/steam/callback`,
+	returnURL: `${config.hostname}/auth/steam/callback`,
 	realm: config.hostname,
 	apiKey: config.steam.apiKey
 }, function (identifier, profile, done) {
@@ -75,8 +77,8 @@ app.set('views', path.join(__dirname, 'views'));
 
 var sessionData = {};
 
-// / route, send start.ejs
-app.get('/', function (req, res) {
+// Code to run on any request
+app.use(async function (req, res, next) {
 	// Check if useragent is Discordbot
 	if (req.headers['user-agent'].includes('Discordbot')) {
 		// send some custom html with meta tags
@@ -88,15 +90,57 @@ app.get('/', function (req, res) {
 			</html>
 			`);
 	}
-	// if they have a valid session token set, send them to the form
+	// if they have a session cookie, set it as the session token
 	if (req.cookies.session) {
-		if (sessionData[req.cookies.session]) {
-			if (sessionData[req.cookies.session].discordID && sessionData[req.cookies.session].steamID) {
-				return res.redirect('/form');
-			}
-		}
+		sessionToken = req.cookies.session;
+	} else {
+		// if they don't have a session cookie, set the session token to null
+		sessionToken = null;
 	}
+	// if they have a valid session token set, send them to the form,
+	if (sessionData[sessionToken]) {
+		if (sessionData[sessionToken].discordID && sessionData[sessionToken].steamID) {
+			// check if they are in the blacklist
+			await db.get(`SELECT * FROM blacklist WHERE discordId = ? OR steamId = ?`, [sessionData[sessionToken].discordID, sessionData[sessionToken].steamID], function sync(err, row) {
+				if (err) {
+					console.log("An error occured while selecting from the database");
+					stack = { error: err, sessionData: sessionData[sessionToken] };
+					console.log(stack);
+				}
+				if (row) {
+					// if they are in the blacklist, send them to the blacklist page
+					return res.redirect(row.forwardsTo)
+				} else {
+					// if they are not in the blacklist, send them to the form
+					// check if theyve submitted the form
+					db.get(`SELECT * FROM users WHERE discordId = ? OR steamId = ?`, [sessionData[sessionToken].discordID, sessionData[sessionToken].steamID], function (err, row) {
+						if (err) {
+							console.log("An error occured while selecting from the database");
+							stack = { error: err, sessionData: sessionData[sessionToken] };
+							console.log(stack);
+						}
+						if (row) {
+							// if theyve submitted the form, send them to the success page
+							return res.render('success.ejs', { sessionData: sessionData[sessionToken] });
+						} else {
+							return res.redirect('/form');
+						}
+					});
+				}
+			});
+		} else {
+			next();
+		}
+	} else {
+		next();
+	}
+
 	// if they don't have a valid session token set, send them to the login page
+});
+
+
+// / route, send start.ejs
+app.get('/', function (req, res) {
 	res.render('start.ejs');
 })
 
@@ -159,7 +203,7 @@ app.get('/form', function (req, res) {
 	if (sessionData[sessionToken]) {
 		// Check if the discordID and steamID are in the sessionData object
 		if (sessionData[sessionToken].discordID && sessionData[sessionToken].steamID) {
-			return res.render('form.ejs', {sessionData: sessionData[sessionToken]});
+			return res.render('form.ejs', { sessionData: sessionData[sessionToken] });
 		}
 	}
 	// Redirect to the home page if the session token is not in the sessionData object
@@ -181,10 +225,10 @@ app.post('/form', async function (req, res) {
 				if (err) {
 					if (err.errno !== 19) { // its not a duplicate error, send logs
 						console.log("An error occured while inserting into the database");
-						stack = {error: err, sessionData: sessionData[sessionToken]};
+						stack = { error: err, sessionData: sessionData[sessionToken] };
 						console.log(stack);
 					}
-					return res.render('failure.ejs', {sessionData: sessionData[sessionToken]})
+					return res.render('failure.ejs', { sessionData: sessionData[sessionToken] })
 				}
 				// Generate Discord embed JSON for the staff channel, a feild for each question, discord and steam name and ids in description
 				embed = {
@@ -202,18 +246,66 @@ app.post('/form', async function (req, res) {
 					});
 				}
 				// Send the embed to the staff channel
-				hook.send({embeds: [embed]});
-				return res.render('success.ejs', {sessionData: sessionData[sessionToken]});
+				hook.send({ embeds: [embed] });
+				return res.render('success.ejs', { sessionData: sessionData[sessionToken] });
 			});
 		}
 	}
-	
+
 });
 
+// /export route, send the database as a json file if the user is logged in on a valid discord account config.staff array
+app.get('/export', function (req, res) {
+	if (!req.cookies.session) return res.redirect('/');
+	if (!sessionData[req.cookies.session]) return res.redirect('/');
+	sessionToken = req.cookies.session;
+	// Check if the session token is in the sessionData object
+	if (sessionData[sessionToken]) {
+		// Check if the discordID and steamID are in the sessionData object
+		if (sessionData[sessionToken].discordID && sessionData[sessionToken].steamID) {
+			// Check if the discordID is in the config.staff array
+			if (config.staff.includes(sessionData[sessionToken].discordID)) {
+				// Get all the data from the database
+				db.all(`SELECT * FROM users`, function (err, rows) {
+					if (err) {
+						console.log("An error occured while selecting from the database");
+						stack = { error: err, sessionData: sessionData[sessionToken] };
+						console.log(stack);
+						return res.redirect('/');
+					}
+					// Send the data as a json file
+					res.setHeader('Content-disposition', 'attachment; filename=database.json');
+					res.setHeader('Content-type', 'application/json');
+					output = rows;
+					output.userData = JSON.parse(output.userData);
+					for (var i = 0; i < output.length; i++) {
+						console.log(output[i].userData)
+						output[i].userNames = {
+							discord: output[i].userData.discordData.username,
+							steam: output[i].userData.steamData.personaname
+						}
+						output[i].userData = JSON.parse(output[i].userData);
+						output[i].formData = output[i].userData.formData;
+						delete output[i].userData;
+					}
+					res.write(JSON.stringify(output, null, 4));
+					res.end();
+				});
+			} else {
+				// If the user is not in the config.staff array, send them to the home page
+				return res.redirect('/');
+			}
+		}
+	}
+});
 
 // logout route, destroy the session
 app.get('/logout', function (req, res) {
 	req.session.destroy();
+	// clear session token cookie
+	res.clearCookie('session');
+	// delete session token from sessionData object
+	delete sessionData[sessionToken];
 	res.redirect('/');
 });
 
