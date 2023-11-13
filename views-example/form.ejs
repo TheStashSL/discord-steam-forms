@@ -1,127 +1,133 @@
 <html>
 
 <head>
-	<title>The Stash | Staff Application Form</title>
-	<!-- Bootstrap CSS -->
-	<link href="https://stackpath.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css" rel="stylesheet">
+    <title>The Stash | Staff Application Form</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css" rel="stylesheet">
 
-	<!-- Bootswatch Darkly theme -->
-	<link href="https://stackpath.bootstrapcdn.com/bootswatch/latest/darkly/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootswatch Darkly theme -->
+    <link href="https://stackpath.bootstrapcdn.com/bootswatch/latest/darkly/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-	<!-- Custom Styles -->
-	<style>
-		.form-container {
-			max-width: 800px;
-			/* Set max-width for the form container */
-			margin: 0 auto;
-			/* Center the form container */
-		}
+    <!-- Custom Styles -->
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* 100% of the viewport height */
+            margin: 0;
+        }
 
-		.form-control {
-			width: auto;
-			/* Make text boxes a decent width */
-		}
-	</style>
+        .centered-div {
+            /* Additional styling if needed */
+            max-width: 800;
+        }
+
+        .required-label::after {
+            content: " *";
+            color: red;
+        }
+    </style>
 </head>
 
 <body>
-	<div class="container"> <!-- Start Bootstrap container -->
-		<h2>[US] The Stash | Staff Application Form</h2>
+    <div class="centered-div"> <!-- Start Bootstrap container -->
+        <h2>[US] The Stash | Staff Application Form</h2>
 
+        <h3>ANY JOKE APPLICATIONS SUBMITTED ARE PUNISHABLE.</h3>
+        <p>You may be barred from submitting more applications for this and future Staff Application Waves, or worse.
+            This is your only warning.</p>
 
-		<h3>ANY JOKE APPLICATIONS SUBMITTED ARE PUNISHABLE.</h3>
-		<p>You may be barred from submitting more applications for this and future Staff Application Waves, or worse.
-			This is your only warning.</p>
+        <h4>PERSONAL REQUIREMENTS TO FULFILL BEFORE FILLING OUT THIS FORM.</h4>
+        <ul>
+            <li>You must be known as a familiar person around the server. (Discord and/or SCP:SL)
+                <ul>
+                    <li>Extra points if you know a staff member that can back you up on your application.</li>
+                    <li>Soliciting/Cold-calling staff for recommendations will not help.</li>
+                </ul>
+            </li>
+            <li>You must be in good standing with the server community and staff team.</li>
+            <li>You must be of the age of 15 or older.
+                <ul>
+                    <li>We've had our fair share of immature staff, both physically and mentally.</li>
+                </ul>
+            </li>
+            <li>We require at least 100+ in-game hours.</li>
+        </ul>
+        <a href="/logout" class="btn btn-primary">Logout</a>
+        <p>If you logged in with the wrong account, you can use this button to log out and log in with the correct
+            account.</p>
+        <!-- Form container added to center the form and manage its width -->
+        <div class="form-container">
+            <form action="/form" method="post">
+                <div class="form-group">
+                    <label for="discordTag" class="required-label">Discord Tag</label>
+                    <!-- a disabled text box as this is prefilled, using a text box just so the user knows its been filled -->
+                    <input type="text" class="form-control" value="<%= sessionData.discordData.global_name %>" disabled>
 
-		<h4>PERSONAL REQUIREMENTS TO FULFILL BEFORE FILLING OUT THIS FORM.</h4>
-		<ul>
-			<li>You must be known as a familiar person around the server. (Discord and/or SCP:SL)
-				<ul>
-					<li>Extra points if you know a staff member that can back you up on your application.</li>
-					<li>Soliciting/Cold-calling staff for recommendations will not help.</li>
-				</ul>
-			</li>
-			<li>You must be in good standing with the server community and staff team.</li>
-			<li>You must be of the age of 15 or older.
-				<ul>
-					<li>We've had our fair share of immature staff, both physically and mentally.</li>
-				</ul>
-			</li>
-			<li>We require at least 100+ in-game hours.</li>
-		</ul>
-		<a href="/logout" class="btn btn-primary">Logout</a>
-		<p>If you logged in with the wrong account, you can use this button to log out and log in with the correct
-			account.</p>
-		<!-- Form container added to center the form and manage its width -->
-		<div class="form-container">
-			<form action="/form" method="post">
-				<div class="form-group">
-					<label for="discordTag">Discord Tag</label>
-					<!-- a disabled text box as this is prefilled, using a text box just so the user knows its been filled -->
-					<input type="text" class="form-control" value="<%= sessionData.discordData.global_name %>" disabled>
+                </div>
 
-				</div>
+                <div class="form-group">
+                    <label for="Steam ID" class="required-label">Steam ID</label>
+                    <!-- a disabled text box as this is prefilled, using a text box just so the user knows its been filled -->
+                    <input type="text" class="form-control" value="<%= sessionData.steamData.steamid %>" disabled>
+                </div>
 
-				<div class="form-group">
-					<label for="steamID">Steam ID</label>
-					<!-- a disabled text box as this is prefilled, using a text box just so the user knows its been filled -->
-					<input type="text" class="form-control" value="<%= sessionData.steamData.steamid %>" disabled>
-				</div>
+                <div class="form-group">
+                    <label for="In-Game Hours" class="required-label">Amount of In-Game Hours on SCP:SL?</label>
+                    <input type="number" class="form-control" id="hours" name="In-Game Hours" required>
+                </div>
 
-				<div class="form-group">
-					<label for="hours">Amount of In-Game Hours on SCP:SL?</label>
-					<input type="number" class="form-control" id="hours" name="hours" required>
-				</div>
+                <div class="form-group">
+                    <label for="Describe Yourself" class="required-label">Provide a description of who you are, along with what you do and what
+                        brought you to apply. This can be brief or as extensive as you like.</label>
+                    <textarea class="form-control" id="selfDescription" name="Describe Yourself" rows="4" cols="50"
+                        required></textarea>
+                </div>
 
-				<div class="form-group">
-					<label for="selfDescription">Provide a description of who you are, along with what you do and what
-						brought you to apply. This can be brief or as extensive as you like.</label>
-					<textarea class="form-control" id="selfDescription" name="selfDescription" rows="4" cols="50"
-						required></textarea>
-				</div>
+                <div class="form-group">
+                    <label for="Review ToS" class="required-label">Please review the Discord TOS and Steam EULA, along with the SCP:SL Verified
+                        Server Rules. Cite some points that apply to what we do below.</label>
+                    <textarea class="form-control" id="tosReview" name="Review ToS" rows="4" cols="50"
+                        required></textarea>
+                    <p>
+                        Resources for your answer: </br>
+                        <a href="https://discord.com/terms">Discord TOS</a></br>
+                        <a href="https://store.steampowered.com/eula/700330_eula_0">Steam EULA</a></br>
+                        <a href="https://scpslgame.com/Verified_server_rules.pdf">SCP:SL Verified Server Rules</a>
+                    </p>
+                </div>
 
-				<div class="form-group">
-					<label for="tosReview">Please review the Discord TOS and Steam EULA, along with the SCP:SL Verified
-						Server Rules. Cite some points that apply to what we do below.</label>
-					<textarea class="form-control" id="tosReview" name="tosReview" rows="4" cols="50"
-						required></textarea>
-					<p>
-						Resources for your answer: </br>
-						<a href="https://discord.com/terms">Discord TOS</a></br>
-						<a href="https://store.steampowered.com/eula/700330_eula_0">Steam EULA</a></br>
-						<a href="https://scpslgame.com/Verified_server_rules.pdf">SCP:SL Verified Server Rules</a>
-					</p>
-				</div>
+                <div class="form-group">
+                    <label for="Age" class="required-label">How old are you? Applicants are required to be 15+ henceforth. (NO
+                        EXCEPTIONS)</label>
+                    <input type="number" class="form-control" id="age" name="Age" required>
+                </div>
 
-				<div class="form-group">
-					<label for="age">How old are you? Applicants are required to be 15+ henceforth. (NO
-						EXCEPTIONS)</label>
-					<input type="number" class="form-control" id="age" name="age" required>
-				</div>
+                <div class="form-group">
+                    <label for="Time Zone" class="required-label">What is your time zone? When are your usual hours for logging on
+                        SCP:SL?</label>
+                    <input type="text" class="form-control" id="timezone" name="Time Zone" required>
+                </div>
 
-				<div class="form-group">
-					<label for="timezone">What is your time zone? When are your usual hours for logging on
-						SCP:SL?</label>
-					<input type="text" class="form-control" id="timezone" name="timezone" required>
-				</div>
+                <div class="form-group">
+                    <label for="Notes">Anything else you'd like to say?</label>
+                    <textarea class="form-control" id="notes" name="Notes" rows="4" cols="50"></textarea>
+                </div>
 
-				<div class="form-group">
-					<label for="notes">Anything else you'd like to say?</label>
-					<textarea class="form-control" id="notes" name="notes" rows="4" cols="50"></textarea>
-				</div>
+                <p>Please review that you've filled out all required fields.</p>
+                <p>
+                    <bold>You will not be able to update your application after submitting it.</bold>
+                </p>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+            <!--make submit button post to /form-->
+        </div> <!-- Form container end -->
 
-				<p>Please review that you've filled out all required fields.</p>
-				<p>
-					<bold>You will not be able to update your application after submitting it.</bold>
-				</p>
-				<button type="submit" class="btn btn-primary">Submit</button>
-			</form>
-			<!--make submit button post to /form-->
-		</div> <!-- Form container end -->
+    </div> <!-- End Bootstrap container -->
 
-	</div> <!-- End Bootstrap container -->
-
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/latest/js/bootstrap.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/latest/js/bootstrap.min.js"></script>
 </body>
 
 </html>
