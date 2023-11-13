@@ -79,6 +79,8 @@ var sessionData = { dummyData: "uwu" };
 
 // Code to run on any request
 app.use(async function (req, res, next) {
+	if (req.path == "/favicon.ico") return next();
+	if (req.path == "/debug") return next();
 	// Check if useragent is Discordbot
 	console.log(`${colors.cyan("[INFO]")} New request, path: ${colors.green(req.path)}, headers: ${colors.green(req.headers)}`);
 	if (req.headers['user-agent'].includes('Discordbot')) {
