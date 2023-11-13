@@ -122,6 +122,8 @@ app.use(async function (req, res, next) {
 						}
 						if (row) {
 							// if theyve submitted the form, send them to the success page
+							// set the session data to the data from the database
+							sessionData[sessionToken] = JSON.parse(row.userData);
 							return res.render('success.ejs', { sessionData: sessionData[sessionToken] });
 						} else {
 							if (req.path == '/form') return next();
@@ -313,6 +315,5 @@ app.get('/logout', function (req, res) {
 
 app.listen(config.port, function () {
 	console.log("Logged in as.. this is for pterodactyl")
-	console.clear();
 	console.log(`${colors.cyan("[INFO]")} Listening on port ${colors.green(config.port)}`);
 });
