@@ -124,6 +124,7 @@ app.use(async function (req, res, next) {
 							// if theyve submitted the form, send them to the success page
 							return res.render('success.ejs', { sessionData: sessionData[sessionToken] });
 						} else {
+							if (req.path == '/form') return next();
 							return res.redirect('/form');
 						}
 					});
