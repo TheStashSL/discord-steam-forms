@@ -75,7 +75,7 @@ app.set('view engine', 'ejs');
 // set views directory
 app.set('views', path.join(__dirname, 'views'));
 
-var sessionData = {};
+var sessionData = { dummyData: "uwu" };
 
 // Code to run on any request
 app.use(async function (req, res, next) {
@@ -100,6 +100,7 @@ app.use(async function (req, res, next) {
 	}
 	// if they have a valid session token set, send them to the form,
 	if (sessionData[sessionToken]) {
+
 		if (sessionData[sessionToken].discordID && sessionData[sessionToken].steamID) {
 			// check if they are in the blacklist
 			await db.get(`SELECT * FROM blacklist WHERE discordId = ? OR steamId = ?`, [sessionData[sessionToken].discordID, sessionData[sessionToken].steamID], function sync(err, row) {
@@ -126,8 +127,7 @@ app.use(async function (req, res, next) {
 							sessionData[sessionToken] = JSON.parse(row.userData);
 							return res.render('success.ejs', { sessionData: sessionData[sessionToken] });
 						} else {
-							if (req.path == '/form') return next();
-							return res.redirect('/form');
+							next();
 						}
 					});
 				}
@@ -136,37 +136,107 @@ app.use(async function (req, res, next) {
 			next();
 		}
 	} else {
+
 		next();
 	}
 
 	// if they don't have a valid session token set, send them to the login page
 });
 
+app.get('/debug', function (req, res) {
+	// debug page, send whatever file from the views directory is specified in the query string
+
+	res.render(req.query.file, {
+		sessionData: {
+			discordID: '289884287765839882',
+			discordData: {
+				id: '289884287765839882',
+				username: 'chrischrome',
+				avatar: 'c7691fef6dadfcf844bfd8ee43373c7a',
+				discriminator: '0',
+				public_flags: 4195072,
+				premium_type: 2,
+				flags: 4195072,
+				banner: '50c432de2f53bf83e3bc9715c5d7a410',
+				accent_color: 16711935,
+				global_name: '[chris@chris-pc ~]$',
+				avatar_decoration_data: null,
+				banner_color: '#ff00ff',
+				mfa_enabled: true,
+				locale: 'en-US',
+				provider: 'discord',
+				accessToken: '',
+				fetchedAt: new Date()
+			},
+			steamID: '76561198083555123',
+			steamData: {
+				steamid: '76561198083555123',
+				communityvisibilitystate: 3,
+				profilestate: 1,
+				personaname: '+1 (866) FEM-BOYS',
+				commentpermission: 1,
+				profileurl: 'https://steamcommunity.com/id/ChrisChrome/',
+				avatar: 'https://avatars.steamstatic.com/4a23e57f1ea10ceddddf589b580f2ba38f8bdbf7.jpg',
+				avatarmedium: 'https://avatars.steamstatic.com/4a23e57f1ea10ceddddf589b580f2ba38f8bdbf7_medium.jpg',
+				avatarfull: 'https://avatars.steamstatic.com/4a23e57f1ea10ceddddf589b580f2ba38f8bdbf7_full.jpg',
+				avatarhash: '4a23e57f1ea10ceddddf589b580f2ba38f8bdbf7',
+				lastlogoff: 1699842366,
+				personastate: 1,
+				primaryclanid: '103582791456753055',
+				timecreated: 1360447543,
+				personastateflags: 0,
+				gameextrainfo: 'SCP: Secret Laboratory',
+				gameid: '700330',
+				loccountrycode: 'KP'
+			}
+		}
+	});
+
+});
+
 
 // / route, send start.ejs
 app.get('/', function (req, res) {
-	res.render('start.ejs');
+	res.redirect('/login');
 })
 
 // Routes
 app.get('/login', function (req, res) {
-	// clear any existing session
-	req.session.destroy();
-	// Set some sort of session token to tie certain variables to the user
-	sessionToken = crypto.randomBytes(32).toString('hex');
-	// put session token in cookie
-	res.cookie('session', sessionToken, { maxAge: 900000, httpOnly: true });
-	// Set the session token in the sessionData object
-	sessionData[sessionToken] = {};
-	res.redirect('/login/discord');
+	if (req.cookies.session) {
+		if (sessionData[req.cookies.session]) {
+			sessionToken = req.cookies.session;
+		} else {
+			// clear any existing session
+			req.session.destroy();
+			// Set some sort of session token to tie certain variables to the user
+			sessionToken = crypto.randomBytes(32).toString('hex');
+			// put session token in cookie
+			res.cookie('session', sessionToken, { maxAge: 900000, httpOnly: true });
+			// Set the session token in the sessionData object
+			sessionData[sessionToken] = {};
+		}
+	} else {
+		// clear any existing session
+		req.session.destroy();
+		// Set some sort of session token to tie certain variables to the user
+		sessionToken = crypto.randomBytes(32).toString('hex');
+		// put session token in cookie
+		res.cookie('session', sessionToken, { maxAge: 900000, httpOnly: true });
+		// Set the session token in the sessionData object
+		sessionData[sessionToken] = {};
+	}
+	// send the login page
+	console.log(sessionData[sessionToken])
+	res.render('login.ejs', { sessionData: sessionData[sessionToken] });
+
 });
 
-app.get('/login/discord', passport.authenticate('discord'));
+app.get('/auth/discord', passport.authenticate('discord'));
 
-app.get('/login/steam', passport.authenticate('steam'));
+app.get('/auth/steam', passport.authenticate('steam'));
 
 app.get('/auth/discord/callback', passport.authenticate('discord', {
-	failureRedirect: '/login/discord'
+	failureRedirect: '/auth/discord'
 }), function (req, res) {
 	// if session token is not set, send to /
 
@@ -179,23 +249,23 @@ app.get('/auth/discord/callback', passport.authenticate('discord', {
 	sessionData[sessionToken].discordID = discordID;
 	sessionData[sessionToken].discordData = req.session.passport.user;
 	console.log(sessionData[sessionToken]);
-	res.redirect('/login/steam');
+	res.redirect('/login');
 });
 
 app.get('/auth/steam/callback', passport.authenticate('steam', {
-	failureRedirect: '/login/steam'
+	failureRedirect: '/auth/steam'
 }), function (req, res) {
-	if (!req.cookies.session) return res.redirect('/');
-	if (!sessionData[req.cookies.session]) return res.redirect('/');
+	if (!req.cookies.session) return res.redirect('/login');
+	if (!sessionData[req.cookies.session]) return res.redirect('/login');
 	console.log("After steam auth, session token is set")
-	sesionToken = req.cookies.session;
+	sessionToken = req.cookies.session;
 	var steamID = req.user._json.steamid; // Steam ID from the Steam authentication
 	// Put the steam ID in the sessionData object
 
 	sessionData[sessionToken].steamID = steamID;
 	sessionData[sessionToken].steamData = req.user._json;
 	console.log(sessionData[sessionToken]);
-	res.redirect('/form');
+	res.redirect('/login');
 });
 
 // form route, send html file
@@ -211,7 +281,7 @@ app.get('/form', function (req, res) {
 		}
 	}
 	// Redirect to the home page if the session token is not in the sessionData object
-	res.redirect('/');
+	res.redirect('/login');
 });
 
 // form post route, sfor now, just print the data to logs, form questions may be changed, so dynamic form creation is needed

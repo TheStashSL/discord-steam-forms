@@ -1,0 +1,52 @@
+<html>
+
+<head>
+    <title>The Stash | Staff Application Form</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootswatch Darkly theme -->
+    <link href="https://stackpath.bootstrapcdn.com/bootswatch/latest/darkly/bootstrap.min.css" rel="stylesheet">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Custom CSS to center main div both vertically and horizontally-->
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            /* 100% of the viewport height */
+            margin: 0;
+        }
+
+        .centered-div {
+            /* Additional styling if needed */
+            max-width: 400px;
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <div class="card border-secondary mb-3 centered-div">
+        <div class="card-header">The Stash Staff Application Form</div>
+        <div class="card-body">
+            <p class="card-text">You must log in with both Discord and Steam to continue.</p>
+            <!-- two buttons, login with discord, using discord blurple, and login with steam, using steam blue-->
+            <div class="row">
+                <div class="col">
+                    <button <% if (sessionData.discordID) { %> disabled <% } %> onclick="window.location = '/auth/discord'" class="btn btn-primary btn-block">Login with Discord</button>
+                    <button <% if (sessionData.steamID) { %> disabled <% } %> onclick="window.location = '/auth/steam'" class="btn btn-primary btn-block">Login with Steam</button>
+                    <button <% if (!sessionData.discordID || !sessionData.steamID) { %> disabled <% } %> onclick="window.location = '/form'" class="btn btn-primary btn-block">Login</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/latest/js/bootstrap.min.js"></script>
+</body>
+
+</html>
