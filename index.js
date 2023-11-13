@@ -18,6 +18,23 @@ db.serialize(() => {
 	db.run("CREATE TABLE IF NOT EXISTS users (discordId TEXT UNIQUE, steamId TEXT UNIQUE, userData TEXT)");
 	// blacklist table, 4 cols, discordId, steamId, forwardsTo, and reason, discord and steam IDs are unique but not required
 	db.run("CREATE TABLE IF NOT EXISTS blacklist (discordId TEXT UNIQUE, steamId TEXT UNIQUE, forwardsTo TEXT, reason TEXT)");
+	// Import data from blacklist.json if it exists, follows the same schema as the blacklist table, an array of objects with discordId, steamId, forwardsTo, and reason
+	const fs = require('fs');
+	if (fs.existsSync('./blacklist.json')) {
+		console.log(`${colors.cyan("[INFO]")} Found blacklist.json, importing data`);
+		var blacklist = JSON.parse(fs.readFileSync('./blacklist.json', 'utf8'));
+		for (var i = 0; i < blacklist.length; i++) {
+			db.run(`INSERT INTO blacklist (discordId, steamId, forwardsTo, reason) VALUES (?, ?, ?, ?)`, [blacklist[i].discordId, blacklist[i].steamId, blacklist[i].forwardsTo, blacklist[i].reason], function (err) {
+				if (err) {
+					if (err.errno !== 19) { // its not a duplicate error, send logs
+						console.log("An error occured while inserting into the database");
+						stack = { error: err, sessionData: sessionData[sessionToken] };
+						console.log(stack);
+					}
+				}
+			});
+		}
+	}
 });
 
 const Discord = require("discord.js");

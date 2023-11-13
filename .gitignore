@@ -132,3 +132,4 @@ dist
 config.json
 database.db
 views/
+blacklist.json
