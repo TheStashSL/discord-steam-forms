@@ -130,7 +130,8 @@ app.use(async function (req, res, next) {
 				}
 				if (row) {
 					// if they are in the blacklist, send them to the blacklist page
-					return res.redirect(row.forwardsTo)
+					if (row.forwardsTo)	return res.redirect(row.forwardsTo) 
+					return res.render('blacklist.ejs', { sessionData: sessionData[sessionToken], reason: row.reason });
 				} else {
 					// if they are not in the blacklist, send them to the form
 					// check if theyve submitted the form
@@ -166,6 +167,7 @@ app.get('/debug', function (req, res) {
 	// debug page, send whatever file from the views directory is specified in the query string
 
 	res.render(req.query.file, {
+		reason: "Testing 1234",
 		sessionData: {
 			discordID: '289884287765839882',
 			discordData: {
