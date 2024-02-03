@@ -375,6 +375,7 @@ app.get('/export', function (req, res) {
 					let output = rows;
 					console.log(output)
 					for (var i = 0; i < output.length; i++) {
+						output[i].userData = JSON.parse(output[i].userData);
 						console.log(output[i].userData)
 						output[i].userTags = {
 							discord: output[i].userData.discordData.username,
