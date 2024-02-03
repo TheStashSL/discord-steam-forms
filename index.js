@@ -375,7 +375,7 @@ app.get('/export', function (req, res) {
 					let output = rows;
 					console.log(output)
 					for (var i = 0; i < output.length; i++) {
-						output[i].userData = JSON.parse(output[i].userData);
+						
 						console.log(output[i].userData)
 						output[i].userTags = {
 							discord: output[i].userData.discordData.username,
@@ -383,7 +383,6 @@ app.get('/export', function (req, res) {
 							discordID: output[i].userData.discordID,
 							steamID: output[i].userData.steamID
 						}
-						output[i].userData = JSON.parse(output[i].userData);
 						output[i].formData = output[i].userData.formData;
 						delete output[i].userData;
 					} 
