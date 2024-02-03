@@ -379,9 +379,7 @@ app.get('/export', function (req, res) {
 						console.log(output[i].userData)
 						output[i].userTags = {
 							discord: output[i].userData.discordData.username,
-							steam: output[i].userData.steamData.personaname,
-							discordID: output[i].userData.discordID,
-							steamID: output[i].userData.steamID
+							steam: output[i].userData.steamData.personaname
 						}
 						output[i].formData = output[i].userData.formData;
 						delete output[i].userData;
