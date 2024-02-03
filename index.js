@@ -373,17 +373,19 @@ app.get('/export', function (req, res) {
 					res.setHeader('Content-disposition', 'attachment; filename=database.json');
 					res.setHeader('Content-type', 'application/json');
 					output = rows;
-					//output.userData = JSON.parse(output.userData);
 					for (var i = 0; i < output.length; i++) {
+						output[i].userData = JSON.parse(output[i].userData);
 						console.log(output[i].userData)
-						output[i].userNames = {
+						output[i].userTags = {
 							discord: output[i].userData.discordData.username,
-							steam: output[i].userData.steamData.personaname
+							steam: output[i].userData.steamData.personaname,
+							discordID: output[i].userData.discordID,
+							steamID: output[i].userData.steamID
 						}
 						output[i].userData = JSON.parse(output[i].userData);
 						output[i].formData = output[i].userData.formData;
 						delete output[i].userData;
-					}
+					} 
 					res.write(JSON.stringify(output, null, 4));
 					res.end();
 				});
