@@ -373,7 +373,7 @@ app.get('/export', function (req, res) {
 					res.setHeader('Content-disposition', 'attachment; filename=database.json');
 					res.setHeader('Content-type', 'application/json');
 					output = rows;
-					output.userData = JSON.parse(output.userData);
+					//output.userData = JSON.parse(output.userData);
 					for (var i = 0; i < output.length; i++) {
 						console.log(output[i].userData)
 						output[i].userNames = {
