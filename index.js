@@ -97,6 +97,7 @@ var sessionData = {  };
 // Code to run on any request
 app.use(async function (req, res, next) {
 	if (req.path == "/favicon.ico") return next();
+	if (req.path == "/robots.txt") return next();
 	if (req.path == "/debug") return next();
 	if (req.path == "/export") return next(); // Had an issue where if a staff member tried to export after they fill out the form, they wouldnt get the export, theyd get success.
 	if (req.path == "/staff/reset") return next();
@@ -165,6 +166,17 @@ app.use(async function (req, res, next) {
 
 	// if they don't have a valid session token set, send them to the login page
 });
+
+app.get("/favicon.ico", function (req, res) {
+	// send the favicon png file in the root directory
+	res.sendFile(path.join(__dirname, 'favicon.png'));
+})
+
+app.get("/robots.txt", function (req, res) {
+	// Send a basic robots.txt to deny all
+	res.send("User-agent: *\nDisallow: /");
+})
+
 
 app.get('/debug', function (req, res) {
 	// debug page, send whatever file from the views directory is specified in the query string
