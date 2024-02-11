@@ -411,26 +411,34 @@ app.get('/staff/reset', function (req, res) {
 				if (req.query.discordId || req.query.steamId) {
 					// if ?discordId is in the query string, delete the user with that discordId from the database
 					if (req.query.discordId) {
-						db.run(`DELETE FROM users WHERE discordId = ?`, [req.query.discordId], function (err) {
+						db.run(`DELETE FROM users WHERE discordId = ?`, [req.query.discordId], function (err, row) {
 							if (err) {
 								console.log("An error occured while deleting from the database");
 								stack = { error: err, sessionData: sessionData[sessionToken] };
 								console.log(stack);
 								return res.status(500).send(stack)
 							}
-							return res.status(200).send({ success: true });
+							if (row) {
+								return res.status(200).send({ success: true });
+							} else {
+								return res.status(404).send({ error: "No user with that discordId" });
+							}
 						});
 					}
 					// if ?steamId is in the query string, delete the user with that steamId from the database
 					if (req.query.steamId) {
-						db.run(`DELETE FROM users WHERE steamId = ?`, [req.query.steamId], function (err) {
+						db.run(`DELETE FROM users WHERE steamId = ?`, [req.query.steamId], function (err, row) {
 							if (err) {
 								console.log("An error occured while deleting from the database");
 								stack = { error: err, sessionData: sessionData[sessionToken] };
 								console.log(stack);
 								return res.status(500).send(stack)
 							}
-							return res.status(200).send({ success: true });
+							if (row) {
+								return res.status(200).send({ success: true });
+							} else {
+								return res.status(404).send({ error: "No user with that steamId" });
+							}
 						});
 					}
 				} else {
