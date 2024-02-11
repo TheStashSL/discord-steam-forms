@@ -235,7 +235,7 @@ app.get('/login', function (req, res) {
 			// Set some sort of session token to tie certain variables to the user
 			sessionToken = crypto.randomBytes(32).toString('hex');
 			// put session token in cookie
-			res.cookie('session', sessionToken, { maxAge: 900000, httpOnly: true });
+			res.cookie('session', sessionToken, { httpOnly: true });
 			// Set the session token in the sessionData object
 			sessionData[sessionToken] = {};
 		}
@@ -245,7 +245,7 @@ app.get('/login', function (req, res) {
 		// Set some sort of session token to tie certain variables to the user
 		sessionToken = crypto.randomBytes(32).toString('hex');
 		// put session token in cookie
-		res.cookie('session', sessionToken, { maxAge: 900000, httpOnly: true });
+		res.cookie('session', sessionToken, { httpOnly: true });
 		// Set the session token in the sessionData object
 		sessionData[sessionToken] = {};
 	}
