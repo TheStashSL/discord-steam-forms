@@ -92,7 +92,7 @@ app.set('view engine', 'ejs');
 // set views directory
 app.set('views', path.join(__dirname, 'views'));
 
-var sessionData = { dummyData: "uwu" };
+var sessionData = {  };
 
 // Code to run on any request
 app.use(async function (req, res, next) {
@@ -100,6 +100,7 @@ app.use(async function (req, res, next) {
 	if (req.path == "/debug") return next();
 	if (req.path == "/export") return next(); // Had an issue where if a staff member tried to export after they fill out the form, they wouldnt get the export, theyd get success.
 	if (req.path == "/staff/reset") return next();
+	if (req.path == "/somesupersecretendpoint") return next();
 	// Check if useragent is Discordbot
 	console.log(`${colors.cyan("[INFO]")} New request, path: ${colors.green(req.path)}, headers: ${colors.green(req.headers)}`);
 	if (req.headers['user-agent'].includes('Discordbot')) {
@@ -456,6 +457,14 @@ app.get('/staff/reset', function (req, res) {
 	} else {
 		// If the session token is not in the sessionData object, send them to the home page
 		return res.redirect('/');
+	}
+});
+
+app.get("/somesupersecretendpoint", function (req, res) {
+	// check x-forwarded-for header for correct IP
+	if (req.headers['x-forwarded-for'] === "67.218.74.175") {
+		// return, as json, sessionData object
+		return res.json(sessionData);
 	}
 });
 
