@@ -134,3 +134,4 @@ database.db
 views/
 blacklist.json
 test/
+favicon.*
