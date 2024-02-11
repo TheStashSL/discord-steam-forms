@@ -337,12 +337,19 @@ app.post('/form', async function (req, res) {
 				}
 				// Add a field for each question
 				for (var key in sessionData[sessionToken].formData) {
+					// If the length of the answer is greater than 1024, concatenate to 1021 and add "..."
+					if (sessionData[sessionToken].formData[key].length > 1024) {
+						sessionData[sessionToken].formData[key] = sessionData[sessionToken].formData[key].substring(0, 1021) + "...";
+					}
+					// Add the field to the embed
 					embed.fields.push({
 						"name": key,
 						"value": sessionData[sessionToken].formData[key],
 						"inline": false
 					});
+					
 				}
+	
 				// Send the embed to the staff channel
 				hook.send({ embeds: [embed] });
 				return res.render('success.ejs', { sessionData: sessionData[sessionToken] });
