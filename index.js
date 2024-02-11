@@ -168,7 +168,7 @@ app.use(async function (req, res, next) {
 
 app.get('/debug', function (req, res) {
 	// debug page, send whatever file from the views directory is specified in the query string
-
+	if (!config.debug) return res.status(403).send("Debugging is disabled");
 	res.render(req.query.file, {
 		reason: "Testing 1234",
 		sessionData: {
