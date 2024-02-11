@@ -99,6 +99,7 @@ app.use(async function (req, res, next) {
 	if (req.path == "/favicon.ico") return next();
 	if (req.path == "/debug") return next();
 	if (req.path == "/export") return next(); // Had an issue where if a staff member tried to export after they fill out the form, they wouldnt get the export, theyd get success.
+	if (req.path == "/staff/reset") return next();
 	// Check if useragent is Discordbot
 	console.log(`${colors.cyan("[INFO]")} New request, path: ${colors.green(req.path)}, headers: ${colors.green(req.headers)}`);
 	if (req.headers['user-agent'].includes('Discordbot')) {
@@ -392,6 +393,61 @@ app.get('/export', function (req, res) {
 				return res.redirect('/');
 			}
 		}
+	}
+});
+
+// /staff/reset route, when given ?discordId or ?steamId, delete the user from the database, if the user is in the config.staff array
+app.get('/staff/reset', function (req, res) {
+	if (!req.cookies.session) return res.redirect('/');
+	if (!sessionData[req.cookies.session]) return res.redirect('/');
+	sessionToken = req.cookies.session;
+	// Check if the session token is in the sessionData object
+	if (sessionData[sessionToken]) {
+		// Check if the discordID and steamID are in the sessionData object
+		if (sessionData[sessionToken].discordID && sessionData[sessionToken].steamID) {
+			// Check if the discordID is in the config.staff array
+			if (config.staff.includes(sessionData[sessionToken].discordID)) {
+				// check that either ?steamId or ?discordId is in the query string
+				if (req.query.discordId || req.query.steamId) {
+					// if ?discordId is in the query string, delete the user with that discordId from the database
+					if (req.query.discordId) {
+						db.run(`DELETE FROM users WHERE discordId = ?`, [req.query.discordId], function (err) {
+							if (err) {
+								console.log("An error occured while deleting from the database");
+								stack = { error: err, sessionData: sessionData[sessionToken] };
+								console.log(stack);
+								return res.status(500).send(stack)
+							}
+							return res.status(200).send({ success: true });
+						});
+					}
+					// if ?steamId is in the query string, delete the user with that steamId from the database
+					if (req.query.steamId) {
+						db.run(`DELETE FROM users WHERE steamId = ?`, [req.query.steamId], function (err) {
+							if (err) {
+								console.log("An error occured while deleting from the database");
+								stack = { error: err, sessionData: sessionData[sessionToken] };
+								console.log(stack);
+								return res.status(500).send(stack)
+							}
+							return res.status(200).send({ success: true });
+						});
+					}
+				} else {
+					// if neither ?discordId or ?steamId are in the query string, send them to the home page
+					return res.status(400).send({ error: "No discordId or steamId in query string" });
+				}
+			} else {
+				// If the user is not in the config.staff array, send them to the home page
+				return res.redirect('/');
+			}
+		} else {
+			// If the discordID or steamID is not in the sessionData object, send them to the home page
+			return res.redirect('/');
+		}
+	} else {
+		// If the session token is not in the sessionData object, send them to the home page
+		return res.redirect('/');
 	}
 });
 

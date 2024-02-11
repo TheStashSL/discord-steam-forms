@@ -133,3 +133,4 @@ config.json
 database.db
 views/
 blacklist.json
+test/
