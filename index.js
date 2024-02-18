@@ -104,16 +104,16 @@ app.use(async function (req, res, next) {
 	if (req.path == "/somesupersecretendpoint") return next();
 	// Check if useragent is Discordbot
 	console.log(`${colors.cyan("[INFO]")} New request, path: ${colors.green(req.path)}, headers: ${colors.green(req.headers)}`);
-	if (req.headers['user-agent'].includes('Discordbot')) {
-		// send some custom html with meta tags
-		return res.send(`
-			<html>
-				<head>
-					<meta property="og:title" content="Staff application form!" />
-				</head>
-			</html>
-			`);
-	}
+	// if (req.headers['user-agent'].includes('Discordbot')) {
+	// 	// send some custom html with meta tags
+	// 	return res.send(`
+	// 		<html>
+	// 			<head>
+	// 				<meta property="og:title" content="Staff application form!" />
+	// 			</head>
+	// 		</html>
+	// 		`);
+	// }
 	// if they have a session cookie, set it as the session token
 	if (req.cookies.session) {
 		sessionToken = req.cookies.session;
