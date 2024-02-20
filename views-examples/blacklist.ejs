@@ -1,7 +1,7 @@
 <html>
 
 <head>
-	<title>The Stash | Staff Application Form</title>
+	<title>The Stash | Access Denied</title>
 	<!-- Bootstrap CSS -->
 	<link href="https://stackpath.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css" rel="stylesheet">
 
@@ -43,24 +43,12 @@
 
 <body>
 
-
-	<div class="card border-secondary mb-3 centered-div">
-		<div class="card-header">The Stash Staff Application Form</div>
-		<div class="card-body">
-			<p class="card-text">You must log in with both Discord and Steam to continue.</p>
-			<!-- two buttons, login with discord, using discord blurple, and login with steam, using steam blue-->
-			<div class="row">
-				<div class="col">
-					<button <% if (sessionData.discordID) { %> disabled <% } %> onclick="window.location =
-							'/auth/discord'" class="btn btn-primary btn-block">Login with Discord</button>
-					<button <% if (sessionData.steamID) { %> disabled <% } %> onclick="window.location = '/auth/steam'"
-							class="btn btn-primary btn-block">Login with Steam</button>
-					<button <% if (!sessionData.discordID || !sessionData.steamID) { %> disabled <% } %>
-							onclick="window.location = '/form'" class="btn btn-primary btn-block">Login</button>
-
-				</div>
-			</div>
-		</div>
+	<div class="alert alert-danger centered-div" role="alert">
+		<h4 class="alert-heading">Access Denied!</h4>
+		<p>The Stash Staff Application Form is not available to you at the moment.</p>
+		<p><%=reason%></p>
+		<hr>
+		<p class="mb-0">If you believe this is an error, please contact support.</p>
 	</div>
 
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/latest/js/bootstrap.min.js"></script>
@@ -68,6 +56,5 @@
 		<p>&copy; <%= new Date().getFullYear() %> The Stash</p>
 	</footer>
 </body>
-
 
 </html>

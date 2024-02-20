@@ -20,6 +20,20 @@
 			margin: 0;
 		}
 	</style>
+	<style>
+		body {
+			position: relative;
+			/* Adjust this value based on your footer height */
+		}
+
+		footer {
+			position: absolute;
+			bottom: 0;
+			text-align: center;
+			
+			padding: 10px;
+		}
+	</style>
 </head>
 
 <body>
@@ -31,7 +45,8 @@
 			NOTICE: Do not ask about the progress of your application. </br>
 			An application review date will always be specified in the Application Wave's Opening
 			Announcement. Please be vigilant for any updates and/or review date extensions which may
-			occur in <a href="https://discordapp.com/channels/896000683407458354/896002001014505472">#announcements</a>.</br>
+			occur in <a
+				href="https://discordapp.com/channels/896000683407458354/896002001014505472">#announcements</a>.</br>
 			DO NOT SHARE THIS FORM THROUGH DM'S OR PUBLIC CHANNELS, UNLESS EXPLICITLY REQUESTED BY PROMOTIONS
 			TEAM PERSONNEL OR COUNCIL MEMBERS.</br>
 
@@ -44,6 +59,10 @@
 		</div>
 	</center>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/latest/js/bootstrap.min.js"></script>
+	<footer>
+		<p>&copy; <%= new Date().getFullYear() %> The Stash</p>
+	</footer>
 </body>
+
 
 </html>

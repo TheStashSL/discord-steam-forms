@@ -20,19 +20,37 @@
 			margin: 0;
 		}
 	</style>
+	<style>
+		body {
+			position: relative;
+			/* Adjust this value based on your footer height */
+		}
+
+		footer {
+			position: absolute;
+			bottom: 0;
+			text-align: center;
+			
+			padding: 10px;
+		}
+	</style>
 </head>
 
 <body>
 	<!-- Big ol centered text that says Success-->
 	<center>
-	<h1 id="success">Submission Failed!</h1>
-	<p class="lead">An error occurred when trying to submit your form!
-		The most likely cause of this is attempting to submit another form using the same Steam account or Discord account.
-		If you feel this is an error, please contact a member of the Promotions Team or Council.
-	</p>
-	<button onclick="window.location = '/logout'" class="btn btn-primary">Logout</button>
-</center>
+		<h1 id="success">Submission Failed!</h1>
+		<p class="lead">An error occurred when trying to submit your form!
+			<!--Insert reason variable here-->
+			<%= reason %>
+			If you feel this is an error, please contact a member of the Promotions Team or Council.
+		</p>
+		<button onclick="window.location = '/logout'" class="btn btn-primary">Logout</button>
+	</center>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/latest/js/bootstrap.min.js"></script>
+	<footer>
+		<p>&copy; <%= new Date().getFullYear() %> The Stash</p>
+	</footer>
 </body>
 
 </html>

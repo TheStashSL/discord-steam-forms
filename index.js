@@ -330,6 +330,12 @@ app.post('/form', async function (req, res) {
 		// Check if the discordID and steamID are in the sessionData object
 		if (sessionData[sessionToken].discordID && sessionData[sessionToken].steamID) {
 			sessionData[sessionToken].formData = req.body;
+			// All form fields have a character limit of 1024, if the length of an answer is greater than 1024, error out to the user
+			for (var key in sessionData[sessionToken].formData) {
+				if (sessionData[sessionToken].formData[key].length > 1024) {
+					return res.render('failure.ejs', { sessionData: sessionData[sessionToken], reason: "One or more of your answers is too long (Max of 1024 characters per answer)" });
+				}
+			}
 			// put the user in the database, if it fails (discordID or steamID already exists), send them to the failure page (they already filled it out)
 			db.run(`INSERT INTO users (discordId, steamId, userData) VALUES (?, ?, ?)`, [sessionData[sessionToken].discordID, sessionData[sessionToken].steamID, JSON.stringify(sessionData[sessionToken])], function (err) {
 				if (err) {
